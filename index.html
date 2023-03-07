@@ -54,13 +54,16 @@
       function CatItem(props){
         return (<li>
             <img
-              src={props.img} style = {{width: "150px", border: "1px solid red"}}
+              src={props.img} style = {{width: "150px", border: "1px solid pink"}}
               alt="고양이"
             />
         </li>);
       }
 
       function Favor({favorites}){
+        if(favorites.length===0){
+          return <div>하트를 눌러 고양이 사진을 저장해봐요!</div>
+        }
         return(
           <ul className="favorites">
             {favorites.map(cat=> (<CatItem img = {cat} key={cat}/>))}
@@ -72,8 +75,9 @@
         return <h1> {props.children} </h1>
       }
 
-      function MainCard({img, onHandleClick}) {
+      function MainCard({img, onHandleClick, alreadyFavor}) {
     
+        const heartIcon = alreadyFavor ?  '💖' : '🤍'
        return(
         <div className="main-card">
           <img
@@ -81,7 +85,7 @@
             alt="고양이"
             width="400"
           />
-          <button onClick={onHandleClick}>🤍</button>
+          <button onClick={onHandleClick}>{heartIcon}</button>
         </div>
        )
       }
@@ -130,6 +134,8 @@
         const [catImage, setCatImage] = React.useState(CAT1);
         const [favorites, setFavorites] = React.useState(jsonLocalStorage.getItem("favorites")||[]);
 
+        const alreadyFavor = favorites.includes(catImage);
+
         async function setInitialCat(){
           const newCat = await fetchCat('First cat');
           setCatImage(newCat);
@@ -151,12 +157,15 @@
           setFavorites(nextFavorites);
           jsonLocalStorage.setItem('favorites',nextFavorites);
         }
+        function titleText(){
+          return catCounter===0? '고영희 짤 생성기' : catCounter+'번째 고영희'
+        }
   
         return (
           <div>
-            <Title>{catCounter}번째 고영희</Title>
+            <Title>{titleText()}</Title>
             <Form onUpdateCat={updateCat}/>
-            <MainCard img={catImage} onHandleClick={handleClick}/>
+            <MainCard img={catImage} onHandleClick={handleClick} alreadyFavor={alreadyFavor}/>
             <Favor favorites={favorites}/>
           </div> 
         )}
