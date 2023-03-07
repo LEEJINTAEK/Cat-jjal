@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>고양이 가라사대</title>
+    <title>고영희씨 짤방</title>
   </head>
   <style>
     body {
@@ -42,6 +42,13 @@
               },  
             };
     
+      const fetchCat = async (text) => {
+        const OPEN_API_DOMAIN = "https://cataas.com";
+        const response = await fetch(`${OPEN_API_DOMAIN}/cat/says/${text}?json=true`);
+        const responseJson = await response.json();
+        return `${OPEN_API_DOMAIN}/${responseJson.url}`;
+      };
+
       const paint = document.querySelector('#app');
 
       function CatItem(props){
@@ -100,7 +107,7 @@
              setErrorMsg('한글로 생성 안돼요!!')
              return;
           }
-            onUpdateCat();
+            onUpdateCat(value);
           }
 
         return (
@@ -123,8 +130,19 @@
         const [catImage, setCatImage] = React.useState(CAT1);
         const [favorites, setFavorites] = React.useState(jsonLocalStorage.getItem("favorites")||[]);
 
-        function updateCat() {
-          setCatImage(CAT2);
+        async function setInitialCat(){
+          const newCat = await fetchCat('First cat');
+          setCatImage(newCat);
+        }
+
+        React.useEffect(()=>{
+          setInitialCat();
+        },[])
+
+        async function updateCat(value) {
+          const newCat = await fetchCat(value);
+
+          setCatImage(newCat);
           setCatCounter(catCounter+1);
           jsonLocalStorage.setItem("catCounter",catCounter+1);
         }
