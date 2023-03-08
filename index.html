@@ -49,8 +49,6 @@
         return `${OPEN_API_DOMAIN}/${responseJson.url}`;
       };
 
-      const paint = document.querySelector('#app');
-
       function CatItem(props){
         return (<li>
             <img
@@ -130,9 +128,9 @@
         const CAT3 = "https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript";
 
         
-        const [catCounter, setCatCounter] = React.useState(jsonLocalStorage.getItem("catCounter")||0);
+        const [catCounter, setCatCounter] = React.useState(()=>{return jsonLocalStorage.getItem("catCounter")||0});
         const [catImage, setCatImage] = React.useState(CAT1);
-        const [favorites, setFavorites] = React.useState(jsonLocalStorage.getItem("favorites")||[]);
+        const [favorites, setFavorites] = React.useState(()=>{return jsonLocalStorage.getItem("favorites")||[]});
 
         const alreadyFavor = favorites.includes(catImage);
 
@@ -149,8 +147,11 @@
           const newCat = await fetchCat(value);
 
           setCatImage(newCat);
-          setCatCounter(catCounter+1);
-          jsonLocalStorage.setItem("catCounter",catCounter+1);
+          // setCatCounter(catCounter+1);
+          setCatCounter((prev)=>{
+            jsonLocalStorage.setItem("catCounter",prev+1);
+            return prev + 1;
+          })
         }
         function handleClick(props){
           const nextFavorites = [...favorites, catImage] 
@@ -169,6 +170,7 @@
             <Favor favorites={favorites}/>
           </div> 
         )}
+        const paint = document.querySelector('#app');
       ReactDOM.createRoot(paint).render(<App />);
     </script>
   </body>
